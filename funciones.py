@@ -108,10 +108,10 @@ def reiniciar_tablero(filas: int, columnas: int, minas: int)-> tuple:
     Reinicia el tablero llamando las funciones dentro de variables que luego se retornan
     '''
     matriz = colocar_minas(minas, filas, columnas, 0)
-    matriz = actualizar_matriz(matriz)
+    matriz_minada = actualizar_matriz(matriz)
     celdas_visibles = crear_matriz(filas, columnas, False)
     banderas = crear_matriz(filas, columnas, False)
-    return matriz, celdas_visibles, banderas
+    return matriz_minada, celdas_visibles, banderas
 
 # MOSTRAR MENSAJE PERSONALIZADO #
 def mostrar_mensaje(ventana: pygame.Surface, texto: str):
@@ -255,7 +255,7 @@ def crear_matriz(filas: int, columnas: int, elemento) -> list:
         fila = []
         for _ in range(columnas):
             fila.append(elemento)
-        matriz.append(fila)  # Agregar fila a la matriz
+        matriz.append(fila)
 
     return matriz
 
@@ -286,7 +286,7 @@ def contar_minas_adjacentes(matriz: list, fila: int, columna: int) -> int:
 
     for i in range(-1, 2):
         for j in range(-1, 2):
-            if i == 0 and j == 0:  # Ignora posicion actual
+            if i == 0 and j == 0:
                 continue
             fila_adjacente = fila + i
             columna_adjacente = columna + j
