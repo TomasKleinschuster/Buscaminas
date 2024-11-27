@@ -177,7 +177,6 @@ def dibujar_tablero(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: in
     Boton volver al menu principal
     Renderiza en loop (celdas, puntaje y temporizador)
     '''
-    # Contador de banderas colocadas de forma más explícita
     banderas_colocadas = 0
 
     while True:
@@ -305,7 +304,7 @@ def actualizar_matriz(matriz: list) -> list:
     columnas = len(matriz[0])
     for i in range(filas):
         for j in range(columnas):
-            if matriz[i][j] == 0:  # Modificar las celdas vacías
+            if matriz[i][j] == 0:
                 minas_adjacentes = contar_minas_adjacentes(matriz, i, j)
                 matriz[i][j] = minas_adjacentes
     return matriz
