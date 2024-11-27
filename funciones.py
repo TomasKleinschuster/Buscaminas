@@ -102,9 +102,6 @@ def reiniciar_tablero(filas: int, columnas: int, minas: int)-> tuple:
     '''
     matriz = colocar_minas(minas, filas, columnas, 0)
     matriz = actualizar_matriz(matriz)
-    print("\nMatriz actualizada:") # ELIMINAR -------------------------------------------------------
-    for fila in matriz:
-        print(fila)
     celdas_visibles = crear_matriz(filas, columnas, False)
     banderas = crear_matriz(filas, columnas, False)
     return matriz, celdas_visibles, banderas
