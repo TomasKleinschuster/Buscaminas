@@ -5,6 +5,7 @@ from variables import *
 def inicializar_ventana():
     '''
     Inicializa la ventana principal
+
     '''
     ventana = pygame.display.set_mode(RESOLUCION_VENTANA, pygame.SCALED)
     pygame.display.set_caption(TITULO)
@@ -14,7 +15,9 @@ def inicializar_ventana():
 def crear_boton(texto: str, x: int, y: int, ancho: int, alto: int, ventana: pygame.Surface,
                 color_boton: str, color_hover: str, color_click: str, color_texto_click: str):
     '''
-    Crea un boton personalizado con texto y colores personalizados
+    Crea un boton interactivo con texto y colores personalizados
+    Cambia su apariencia segun el estado del cursor (normal, hover o clic)
+    Retorna True si es presionado o False en caso contrario
     '''
     cursor = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -41,7 +44,9 @@ def cambiar_dificultad():
 # VENTANA PUNTAJES #
 def seleccionar_puntajes(ventana: pygame.Surface):
     '''
-    Ventana de puntajes
+    Muestra la ventana de puntajes
+    Crea un cuadro para contener los puntajes
+    Crea un boton "VOLVER" para volver al menu
     '''
     while True:
         pygame.draw.rect(ventana, VERDE, (250, 80, 510, 400), 0, 25)
@@ -76,7 +81,9 @@ def mostrar_tiempo(ventana: pygame.Surface, tiempo: int):
 # VENTANA SELECCION DIFICULTAD #
 def seleccionar_dificultad(ventana: pygame.Surface):
     '''
-    Ventana de seleccion de dificultad
+    Muestra la ventana para seleccionar la dificultad del juego
+    Crea botones para elegir entre "FACIL", "MEDIO" y "DIFICIL"
+    Crea un boton "VOLVER" para volver al menu
     '''
     while True:
         pygame.draw.rect(ventana, VERDE, (250, 80, 510, 400), 0, 25)
@@ -98,7 +105,7 @@ def seleccionar_dificultad(ventana: pygame.Surface):
 # REINICIAR TABLERO #
 def reiniciar_tablero(filas: int, columnas: int, minas: int)-> tuple:
     '''
-    Reinicia el tablero
+    Reinicia el tablero llamando las funciones dentro de variables que luego se retornan
     '''
     matriz = colocar_minas(minas, filas, columnas, 0)
     matriz = actualizar_matriz(matriz)
@@ -109,7 +116,7 @@ def reiniciar_tablero(filas: int, columnas: int, minas: int)-> tuple:
 # MOSTRAR MENSAJE PERSONALIZADO #
 def mostrar_mensaje(ventana: pygame.Surface, texto: str):
     '''
-    Ventana de mensaje
+    Muestra un mensaje dentro de un recuadro
     '''
     pygame.draw.rect(ventana, BLANCO, (250, 80, 510, 400), 0, 25)
     pygame.draw.rect(ventana, GRIS_CLARO, (250, 80, 510, 400), 10, 25)
@@ -122,7 +129,8 @@ def mostrar_mensaje(ventana: pygame.Surface, texto: str):
 def dibujar_celdas(ventana: pygame.Surface, filas: int, columnas: int, ancho_tablero: int, alto_tablero: int,
                     banderas: list, celdas_visibles: list, matriz: list):
     '''
-    Dibuja las celdas del tablero
+    Itera sobre cada celda del tablero
+    Dibuja el estado actual de las celdas (bandera, celda cubierta, mina o numero)
     '''
     for fila in range(filas):
         for col in range(columnas):
@@ -162,7 +170,12 @@ def dibujar_celdas(ventana: pygame.Surface, filas: int, columnas: int, ancho_tab
 def dibujar_tablero(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: int, columnas: int, minas: int,
                     banderas: list, celdas_visibles: list, puntaje: int, matriz: list):
     '''
-    Dibuja el tablero
+    Calcula el centro del tablero con el tamaño de las celdas y la ventana
+    Maneja eventos clic izquierdo y derecho
+    Actualiza el estado descubrir celdas o poner/quitar banderas
+    Boton reiniciar el juego
+    Boton volver al menu principal
+    Renderiza en loop (celdas, puntaje y temporizador)
     '''
     # Contador de banderas colocadas de forma más explícita
     banderas_colocadas = 0
@@ -217,19 +230,16 @@ def dibujar_tablero(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: in
         dibujar_celdas(ventana, filas, columnas, ancho_tablero, alto_tablero, banderas, celdas_visibles, matriz)
         
         pygame.display.flip()
-        reloj.tick(30)
 
 # VENTANA JUEGO #
 def seleccionar_jugar(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: int, columnas: int, minas: int):
     '''
-    Ventana de seleccion de jugar
-    Se crea una matriz inicial
+    Se crea la matriz del tablero con minas y actualizando celdas con numeros
+    Crea matrices para celdas visibles y banderas
+    Llama la función "dibujar_tablero"
     '''
     matriz = colocar_minas(minas, filas, columnas, 0)
     matriz_minada = actualizar_matriz(matriz)
-    print("\nMatriz actualizada:") # ELIMINAR -------------------------------------------------------
-    for fila in matriz_minada:
-        print(fila)
     puntaje = 0
     celdas_visibles = crear_matriz(filas, columnas, False)
     banderas = crear_matriz(filas, columnas, False)
