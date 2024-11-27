@@ -192,13 +192,13 @@ def dibujar_tablero(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: in
                                 celdas_visibles[fila][col] = True
                     elif event.button == 3:  # evento click derecho
                         if not celdas_visibles[fila][col]:
-                            if banderas_colocadas < minas:
-                                if not banderas[fila][col]:
-                                    banderas[fila][col] = True 
+                            if not celdas_visibles[fila][col]:
+                                if banderas[fila][col]:
+                                    banderas[fila][col] = False
+                                    banderas_colocadas -= 1
+                                elif banderas_colocadas < minas: 
+                                    banderas[fila][col] = True
                                     banderas_colocadas += 1
-                                else: 
-                                    banderas[fila][col] = False 
-                                    banderas_colocadas -= 1 
 
         pygame.draw.rect(ventana, BLANCO, (100, 30, 800, 500), 0, 25)
         pygame.draw.rect(ventana, GRIS, (100, 30, 800, 500), 10, 25)
@@ -223,6 +223,7 @@ def dibujar_tablero(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: in
 def seleccionar_jugar(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: int, columnas: int, minas: int):
     '''
     Ventana de seleccion de jugar
+    Se crea una matriz inicial
     '''
     matriz = colocar_minas(minas, filas, columnas, 0)
     matriz_minada = actualizar_matriz(matriz)
@@ -234,9 +235,6 @@ def seleccionar_jugar(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: 
     banderas = crear_matriz(filas, columnas, False)
 
     dibujar_tablero(ventana, reloj, filas, columnas, minas, banderas, celdas_visibles, puntaje, matriz_minada)
-
-
-
 
 # CREACION MATRIZ #
 def crear_matriz(filas: int, columnas: int, elemento) -> list:
