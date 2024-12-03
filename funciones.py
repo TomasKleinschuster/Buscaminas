@@ -1,11 +1,11 @@
 import random
 from variables import *
+from json import *
 
 ### VISUALES ###
 def inicializar_ventana():
     '''
     Inicializa la ventana principal
-
     '''
     ventana = pygame.display.set_mode(RESOLUCION_VENTANA, pygame.SCALED)
     pygame.display.set_caption(TITULO)
@@ -37,9 +37,6 @@ def crear_boton(texto: str, x: int, y: int, ancho: int, alto: int, ventana: pyga
     ventana.blit(texto_boton, texto_rect)
     return es_click
 
-# CAMBIAR DIFICULTAD # INCOMPLETO #
-def cambiar_dificultad():
-    pass
 
 # VENTANA PUNTAJES #
 def seleccionar_puntajes(ventana: pygame.Surface):
@@ -67,6 +64,9 @@ def mostrar_puntaje(ventana: pygame.Surface, puntaje: int):
     pygame.draw.rect(ventana, GRIS, (600, 55, 275, 50), 0, 10)
     texto_puntaje = font.render(f"Puntaje: {puntaje:04d}", True, NEGRO)
     ventana.blit(texto_puntaje, (625, 58))
+    puntajes = puntaje
+
+    
 
 # TIMER #
 def mostrar_tiempo(ventana: pygame.Surface, tiempo: int):
@@ -77,6 +77,9 @@ def mostrar_tiempo(ventana: pygame.Surface, tiempo: int):
     texto_timer = font.render(f"Tiempo: {tiempo:02d}", True, NEGRO)
     ventana.blit(texto_timer, (130, 58))
 
+# CAMBIAR DIFICULTAD # INCOMPLETO #
+def cambiar_dificultad():
+    pass
 
 # VENTANA SELECCION DIFICULTAD #
 def seleccionar_dificultad(ventana: pygame.Surface):
@@ -124,6 +127,16 @@ def mostrar_mensaje(ventana: pygame.Surface, texto: str):
     texto_mensaje = font.render(texto, True, ROJO)
     ventana.blit(texto_mensaje, (340, 225))
     pygame.display.flip()
+
+def comprobar_ganador(celdas_visibles, matriz):
+    '''
+    Verifica si todas las celdas sin minas fueron descubiertas
+    '''
+    for fila in range(len(matriz)):
+        for col in range(len(matriz[0])):
+            if matriz[fila][col] != -1 and not celdas_visibles[fila][col]:
+                return False
+    return True
 
 # DIBUJAR CELDAS DEL TABLERO #
 def dibujar_celdas(ventana: pygame.Surface, filas: int, columnas: int, ancho_tablero: int, alto_tablero: int,
@@ -197,11 +210,17 @@ def dibujar_tablero(ventana: pygame.Surface, reloj: pygame.time.Clock, filas: in
                         if not banderas[fila][col]:
                             celdas_visibles[fila][col] = True
                             if matriz[fila][col] == -1:
-                                mostrar_mensaje(ventana, "¡Perdiste!")
+                                mostrar_mensaje(ventana, "Perdiste!")
                                 pygame.time.wait(2000)
                             else:
                                 puntaje += 1
                                 celdas_visibles[fila][col] = True
+                                if celdas_visibles == 0:
+                                    pass
+                                    # revelar_celdas_vacias(fila, col, matriz, celdas_visibles)
+                            if comprobar_ganador(celdas_visibles, matriz):
+                                mostrar_mensaje(ventana, "Ganaste!")
+                                pygame.time.wait(2000)
                     elif event.button == 3:  # evento click derecho
                         if not celdas_visibles[fila][col]:
                             if not celdas_visibles[fila][col]:
@@ -308,3 +327,51 @@ def actualizar_matriz(matriz: list) -> list:
                 minas_adjacentes = contar_minas_adjacentes(matriz, i, j)
                 matriz[i][j] = minas_adjacentes
     return matriz
+
+def pedir_nombre(ventana: pygame.Surface):
+    """
+    Ingresar nombre antes o despues del juego
+    """
+    nombre = ""
+    corriendo = True
+
+    while corriendo == True:
+        texto_titulo = font.render("INGRESAR NOMBRE", True, NEGRO)
+        texto_parrafo = font.render("Presione 'ENTER' al finalizar", True, NEGRO)
+        pygame.draw.rect(ventana, VERDE, (250, 80, 510, 400), 0, 25)
+        pygame.draw.rect(ventana, GRIS, (250, 80, 510, 400), 10, 25)
+        ventana.blit(texto_titulo, (330, 100))
+        texto_nombre = font.render(nombre, True, NEGRO)
+        ventana.blit(texto_nombre, (400, 300))
+        ventana.blit(texto_parrafo, (275, 400))
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    corriendo = False
+                elif event.key == pygame.K_BACKSPACE:
+                    nombre = nombre[:-1]
+                else:
+                    nombre += event.unicode
+
+    return nombre
+
+def guardar_puntaje_y_nombre(nombre: str, puntaje: int, archivo="./assets/puntajes.json"):
+    """
+    Guarda el nombre y puntaje del usuario en un archivo
+    """
+    with open(archivo, "a") as file:
+        file.write(f"{nombre}: {puntaje}\n")
+
+def cargar_puntajes(path:str)->list:
+    '''
+    Carga un archivo json y devuelve una lista
+    '''
+    with open(path, "r") as archivo:
+        datos = load(archivo)
+    return datos
